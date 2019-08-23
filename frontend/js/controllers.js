@@ -1032,11 +1032,331 @@ angular.module('elixir_front.controllers', [])
 		$scope.makeIdURLSafe($scope.software.name);
 	}
 
+	$scope.connect=function(){
+		var data = null;
+		var xhr = new XMLHttpRequest();
+		xhr.withCredentials = true;
+		xhr.addEventListener("readystatechange", function () {
+		  if (this.readyState === 4) {
+		    console.log(this.responseText);
+		  }
+		});
+		xhr.open("PUT", "https://api.github.com/repos/ValentinMarcon/content/authorizations/clients/");
+		xhr.setRequestHeader("cache-control", "no-cache");
+		xhr.send(data);
+	}
+
+
+	///////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
+	$scope.orig_user="ValentinMarcon"
+	$scope.orig_repo="TESTAPI"
+	$scope.this_user="nocraMnitnelaV"
+	$scope.orig_branch="dev"
+	$scope.new_branch="new_branc"
+	$scope.authorizations="Basic Tm9jcmFtTml0bmVsYXY6Z2l0aHViMTg="
+
+	///////////////////////// 0 test : get file // OK
+	// $scope.test=function(){
+	// 	var data = null;
+	// 	var xhr = new XMLHttpRequest();
+	// 	xhr.withCredentials = true;
+	// 	xhr.addEventListener("readystatechange", function () {
+	// 	  if (this.readyState === 4) {
+	// 	    console.log(this.responseText);
+	// 	  }
+	// 	});
+	// 	xhr.open("GET", "https://api.github.com/repos/ValentinMarcon/content/contents/data/1000genomes_assembly_converter/1000genomes_assembly_converter.json?ref=new_1000genomes_assembly_converter_2019-6-5-17-27-31-322");
+	// 	xhr.send(data);
+	// }
+
+
+	///////////////////////// 0 pull request : update file // OK
+	// $scope.test2=function(json_to_send){
+	// 	var xhr = new XMLHttpRequest();
+	// 	xhr.withCredentials = true;
+	// 	xhr.addEventListener("readystatechange", function () {
+	// 		if (this.readyState === 4) {    
+	// 				var sha=this.response.sha;	//Test exist
+	// 				var xhr2 = new XMLHttpRequest();
+	// 				xhr2.withCredentials = true;
+	// 				xhr2.addEventListener("readystatechange", function () {
+	// 					if (this.readyState === 4) {
+	// 						console.log(this.response);
+	// 					}
+	// 				});
+	// 				xhr2.open("PUT", "https://api.github.com/repos/ValentinMarcon/TESTAPI/contents/entry.json");
+
+	// 		    	var encodedContent = btoa(json_to_send)
+	// 				var data2 = "{\"message\":\"update JSON\",\"committer\":{\"name\": \"ValentinMarcon\",\"email\":\"v.marcon@outlook.fr\"},\"content\":\""+encodedContent+"\",\"sha\":\""+sha+"\",\n\"branch\":\"dev\"}";
+	// 				xhr2.setRequestHeader("content-type", "application/json");
+	// 				var encodedData = btoa("ValentinMarcon" + ":" + "f3fef8c101027706d7872e974077f711678d0386");
+	// 				xhr2.setRequestHeader("authorization","Basic "+encodedData);
+	// 				xhr2.send(data2);
+	// 		}
+	// 	});
+	// 	var data = null;
+	// 	xhr.open("GET", "https://api.github.com/repos/ValentinMarcon/TESTAPI/contents/entry.json?ref=dev");
+	// 	xhr.responseType = 'json';
+	// 	xhr.send(data);
+	// }
+
+
+	///////////////////////// 1 FORK ///////////////////////// OK
+	// $scope.test3fork=function(){
+	// 	console.log("inc");
+	// 	var data = null;
+
+	// 	var xhr = new XMLHttpRequest();
+	// 	xhr.withCredentials = true;
+
+	// 	xhr.addEventListener("readystatechange", function () {
+	// 	  if (this.readyState === 4) {
+	// 	    console.log(this.responseText);
+	// 	  }
+	// 	});
+	// 	xhr.open("POST", "https://api.github.com/repos/valentinmarcon/TESTAPI/forks");
+	// 	xhr.setRequestHeader("authorization", "Basic Tm9jcmFtTml0bmVsYXY6Z2l0aHViMTg=");
+	// 	xhr.send(data);
+	// }
+
+
+	///////////////////////// 2 NEW BRANCH ///////////////////////// OK
+	// $scope.test4br=function(){
+	// 	var data = null;
+	// 	var xhr = new XMLHttpRequest();
+	// 	xhr.withCredentials = true;
+	// 	xhr.addEventListener("readystatechange", function () {
+	// 		if (this.readyState === 4) {
+	// 				var sha=this.response.object.sha; 	//Test exist
+	// 				var data2 = "{\"ref\":\"refs/heads/"+$scope.new_branch+"\",\"sha\":\""+sha+"\"}";
+	// 				var xhr2 = new XMLHttpRequest();
+	// 				xhr2.withCredentials = true;
+	// 				xhr2.addEventListener("readystatechange", function () {
+	// 				  if (this.readyState === 4) {
+	// 				    console.log(this.responseText);
+	// 				  }
+	// 				});
+	// 				xhr2.open("POST", "https://api.github.com/repos/"+$scope.this_user+"/"+$scope.orig_repo+"/git/refs");
+	// 				xhr2.setRequestHeader("authorization", $scope.authorizations);
+	// 				xhr2.send(data2);
+	// 		}
+	// 	});
+	// 	xhr.open("GET", "https://api.github.com/repos/"+$scope.orig_user+"/"+$scope.orig_repo+"/git/refs/heads/"+$scope.orig_branch);
+	// 	xhr.responseType = 'json';
+	// 	xhr.send(data);
+	// }
+
+
+	// ///////////////////////// 3 NEW FILE /////////////////////////  OK
+	// $scope.test5newfile=function(json_to_send){
+	// 	var xhr = new XMLHttpRequest();
+	// 	xhr.withCredentials = true;
+	// 	xhr.addEventListener("readystatechange", function () {
+	// 		if (this.readyState === 4) {    
+	// 				var sha=this.response.sha;	//Test exist
+	// 				console.log(sha);
+	// 				var xhr2 = new XMLHttpRequest();
+	// 				xhr2.withCredentials = true;
+	// 				xhr2.addEventListener("readystatechange", function () {
+	// 					if (this.readyState === 4) {
+	// 						console.log(this.response);
+	// 					}
+	// 				});
+	// 				xhr2.open("PUT", "https://api.github.com/repos/"+$scope.this_user+"/"+$scope.orig_repo+"/contents/entry.json");
+
+	// 		    	var encodedContent = btoa(json_to_send)
+	// 				var data2 = "{\"message\":\"update JSON\",\"content\":\""+encodedContent+"\",\"sha\":\""+sha+"\",\n\"branch\":\""+$scope.new_branch+"\"}";
+	// 				xhr2.setRequestHeader("content-type", "application/json");
+	// 				xhr2.setRequestHeader("authorization",$scope.authorizations);
+	// 				xhr2.send(data2);
+	// 		}
+	// 	});
+	// 	var data = null;
+	// 	xhr.open("GET", "https://api.github.com/repos/"+$scope.this_user+"/"+$scope.orig_repo+"/contents/entry.json?ref="+$scope.new_branch); 
+	// 	// Attention, if we reload fast the sha getted is the old one so its will not work...
+	// 	xhr.responseType = 'json';
+	// 	xhr.send(data);
+	// }
+
+ //   ///////////////////////// 4 PULL REQUEST /////////////////////////  OK 
+	// $scope.test6pr=function(){
+	// 	var data = "{\"title\":\"Pull Request auto\",\"head\":\""+$scope.this_user+":"+$scope.new_branch+"\",\"base\":\""+$scope.orig_branch+"\",\"body\":\"Please pull this in...\"}";
+	// 	var xhr = new XMLHttpRequest();
+	// 	xhr.withCredentials = true;
+	// 	xhr.addEventListener("readystatechange", function () {
+	// 	  if (this.readyState === 4) {
+	// 	    console.log(this.responseText);
+	// 	  }
+	// 	});
+	// 	xhr.open("POST", "https://api.github.com/repos/"+$scope.orig_user+"/"+$scope.orig_repo+"/pulls");
+	// 	xhr.setRequestHeader("authorization", $scope.authorizations);
+	// 	xhr.send(data);
+	// }
+
+
+	///////////////////////// 7 FETCH GET /////////////////////////  OK 
+	// $scope.test7fetch=function(){
+	// 	fetch("https://api.github.com/repos/"+$scope.orig_user+"/"+$scope.orig_repo+"/git/refs/heads/"+$scope.orig_branch)
+	//     .then(function (res) {
+	//     	return res.json();
+	//     })
+	//     .then(function (data) {
+	//         console.log(data);
+ //       })
+	// }
+
+	///////////////////////// 8 FETCH POST FORK /////////////////////////   OK
+	$scope.test8fetch=function(){
+		fetch("https://api.github.com/repos/"+$scope.orig_user+"/"+$scope.orig_repo+"/forks", {
+                method: 'POST',
+                headers : new Headers({"authorization":"Basic Tm9jcmFtTml0bmVsYXY6Z2l0aHViMTg="}),
+            })
+	    .then(function (res) {
+	    	return res.json();
+	    })
+	    .then(function (data) {
+	        console.log(data);
+       })
+	    .catch(function (err) {
+	    	console.log(err);
+	    })
+	}
+
+	///////////////////////// 9 FETCH NEW BRANCH /////////////////////////    OK
+	// BUG: Créé commit sur ValentinMarcon dev... COMMIT FANTOMES /!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\
+	$scope.test9br=function(){
+
+		fetch("https://api.github.com/repos/"+$scope.orig_user+"/"+$scope.orig_repo+"/git/refs/heads/"+$scope.orig_branch, {method: 'GET'})
+	    .then(function (res) {
+	    	return res.json();
+	    })
+	    .then(function (data) {  
+	    		var sha=data.object.sha;
+	    		console.log("dat-------------");
+	    		console.log(data);
+	    		console.log("sha-------------");
+	    		console.log(sha);
+	    		console.log("sha-------------");
+				fetch("https://api.github.com/repos/"+$scope.this_user+"/"+$scope.orig_repo+"/git/refs", {
+		                method: 'POST',
+		                headers : new Headers({"authorization":$scope.authorizations}),
+		                body : JSON.stringify({ref:"refs/heads/"+$scope.new_branch,sha:sha})
+		            })
+			    .then(function (res) {
+			    	return res.json();
+			    })
+			    .then(function (data) {
+			        console.log(data);
+		       })
+			    .catch(function (err) {
+			    	console.log(err);
+			    })
+        })
+		.catch(function (err) {
+			console.log(err);
+		})
+	}
+
+
+	// ///////////////////////// 10 FETCH NEW FILE /////////////////////////   OK 
+	$scope.test10newfile=function(json_to_send){
+
+		fetch("https://api.github.com/repos/"+$scope.this_user+"/"+$scope.orig_repo+"/contents/entry.json?ref="+$scope.new_branch, {method: 'GET'})
+	    .then(function (res) {
+	    	return res.json();
+	    })
+	    .then(function (data) {  
+	    		var sha=data.sha;
+	    		console.log("dat-------------");
+	    		console.log(data);
+	    		console.log("sha-------------");
+	    		console.log(sha);
+	    		console.log("sha-------------");
+	    		var encodedContent = btoa(json_to_send)
+				fetch("https://api.github.com/repos/"+$scope.this_user+"/"+$scope.orig_repo+"/contents/entry.json", {
+		                method: 'PUT',
+		                headers : new Headers({"authorization":$scope.authorizations,"content-type":"application/json"}),
+		                body : JSON.stringify({message:"up",content:encodedContent,sha:sha,branch:$scope.new_branch})
+		            })
+			    .then(function (res) {
+			    	return res.json();
+			    })
+			    .then(function (data) {
+			        console.log(data);
+		       })
+			    .catch(function (err) {
+			    	console.log(err);
+			    })
+        })
+		.catch(function (err) {
+			console.log(err);
+		})
+	}
+
+
+
+ //   ///////////////////////// 11 FETCH PULL REQUEST /////////////////////////  OK 
+	$scope.test11pr=function(){
+		fetch("https://api.github.com/repos/"+$scope.orig_user+"/"+$scope.orig_repo+"/pulls", {
+                method: 'POST',
+                headers : new Headers({"authorization":"Basic Tm9jcmFtTml0bmVsYXY6Z2l0aHViMTg="}),
+                body : JSON.stringify({title:"Pull Request auto with fetch",head:$scope.this_user+":"+$scope.new_branch,base:$scope.orig_branch,body:"Please accept my nice pr"})
+            })
+	    .then(function (res) {
+	    	return res.json();
+	    })
+	    .then(function (data) {
+	        console.log(data);
+       })
+	    .catch(function (err) {
+	    	console.log(err);
+	    })
+	}
+
+	// 1 fork 
+		// Chek if its already forked
+		// 2 new branch
+	// 3 create file
+	// 4 PR
 	$scope.validateButtonClick = function() {
 		$timeout(function() {
-			$scope.sendResource(ToolCreateValidator.save, $scope.validationProgress, false, 'create-validate');
+			//$scope.sendResource(ToolCreateValidator.save, $scope.validationProgress, false, 'create-validate');
+			//console.log("======================================");
+			//console.log(angular.toJson($scope.software, 2));
+			//console.log("======================================");
+    		//$scope.test();
+    		// $scope.test2(angular.toJson($scope.software, 2));
+    		// $scope.test3fork();
+   //  		console.log("======================================");
+   //  		$scope.test4br();
+   //  		console.log("======================================");
+			// $scope.test5newfile(angular.toJson($scope.software, 2));
+			// console.log("======================================");
+			// $scope.test6pr();
+    		// console.log("======================================"); 
+    		// $scope.test7fetch();
+    		// console.log("======================================"); 
+    		//$scope.test8fetch();
+    		// console.log("======================================"); 
+    		// $scope.test9br();
+    		// console.log("======================================"); 
+    		// $scope.test10newfile(angular.toJson($scope.software, 2));
+    		console.log("======================================"); 
+    		$scope.test11pr();
+    		console.log("======================================"); 
+    
+
+
+    		// $scope.new_pr($scope.software);
+    		// console.log("======================================");
 		},100);
 	}
+	///////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
+
+
+
 
 	$scope.registerButtonClick = function() {
 		if (confirm("Are you sure you want to save the resource? ")) {

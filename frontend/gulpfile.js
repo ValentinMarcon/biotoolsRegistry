@@ -7,7 +7,9 @@ var gulp = require('gulp'),
 	urlAdjuster = require('gulp-css-url-adjuster'),
 	minifyCss = require('gulp-minify-css'),
 	sourcemaps = require('gulp-sourcemaps'),
-	rename = require('gulp-rename');
+	rename = require('gulp-rename'),
+	browserSync = require('browser-sync').create(),
+	Github = require('github-api');
 
 // copy
 gulp.task('copy', function () {
@@ -120,6 +122,15 @@ gulp.task('watch', function() {
 	gulp.watch('css/**/*.css', ['css'])
 	gulp.watch('components/**/*.css', ['css'])
 	gulp.watch('components/**/*.js', ['scripts'])
+});
+
+// Static server
+gulp.task('browser-sync', function() {
+    browserSync.init({
+        server: {
+            baseDir: "./"
+        }
+    });
 });
 
 // default
