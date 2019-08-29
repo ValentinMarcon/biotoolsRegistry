@@ -1027,6 +1027,7 @@ angular.module('elixir_front.controllers', [])
 	// initially set the ID to change automatically when name is modified
 	$scope.autoUpdateId = true;
 
+
 	$scope.editIdToggleButtonClick = function () {
 		$scope.autoUpdateId = !$scope.autoUpdateId;
 		$scope.makeIdURLSafe($scope.software.name);
@@ -1034,6 +1035,11 @@ angular.module('elixir_front.controllers', [])
 
 
 	///////////////////////////////////////////////////////////////////////////
+	//TODO:
+	//	- Add control on Github api functions
+	//		- Error management
+	//		- File creation/update control
+	//		- Pull request messages
 	///////////////////////////////////////////////////////////////////////////
 	$scope.client_id="910ed700e3586d568fc3"
 	$scope.client_secret="4b06553041f33c30dc922f8c20a032b9fa35f44c"
@@ -1042,11 +1048,40 @@ angular.module('elixir_front.controllers', [])
 	$scope.this_user="nocraMnitnelaV"
 	$scope.orig_branch="dev"
 	$scope.new_branch="new_branch"
-	$scope.authorizations="Basic ZmVkODUyYTNlN2ZhYjlhZWYzYzU2Y2RiMTlhZDA3NDEzZDM2ZTJiMQ==" // TO REMOVE
+	$scope.pull_request = {}
+	$scope.login = false;
+	var searchParams = new URLSearchParams(window.location.search);
+	if (searchParams.has('code')) {
+		console.log("toto");
+		var code = searchParams.get('code');
+		var body = new FormData();
+		body.append("code", code);
+		body.append("client_id", $scope.client_id);
+		body.append("client_secret", $scope.client_secret);
+		fetch("https://github.com/login/oauth/access_token", {
+                method: 'POST',
+                headers : new Headers({accept:'application/json'}),
+                body : body
+        })
+	    .then(function (res) {
+	    	return res.json();
+	    })
+	    .then(function (data) {
+	    	if (data.access_token){
+		        $scope.authorizations="Basic "+btoa(data.access_token); // NOT Really secure
+		    	console.log($scope.authorizations);
+		    	$scope.login = true;
+		    	window.history.replaceState({}, document.title, "/");
+		    }
+		   	else console.log(data.error);
+       })
+	    .catch(function (err) {
+	    	console.log(err);
+	    })
+	}
 
 
 	$scope.loginButtonClick=function(){
-		var searchParams = new URLSearchParams(window.location.search)
     	if (searchParams.has('code')) {
     		var code = searchParams.get('code');
 			var body = new FormData();
@@ -1062,14 +1097,32 @@ angular.module('elixir_front.controllers', [])
 		    	return res.json();
 		    })
 		    .then(function (data) {
-		    	console.log(data.error);
-		        $scope.authorizations="Basic "+btoa(data.access_token); // NOT Really secure
-		    	console.log($scope.authorizations);
+		    	if (data.access_token){
+			        $scope.authorizations="Basic "+btoa(data.access_token); // NOT Really secure
+			    	console.log($scope.authorizations);
+			    	$scope.login = true;
+			    }
+			   	else console.log(data.error);
 	       })
 		    .catch(function (err) {
 		    	console.log(err);
 		    })
 		}
+	}
+
+
+	// TODO: Manage error in GET: non-json entry
+	$scope.searchButtonClick=function(){
+		fetch("https://api.github.com/repos/"+$scope.orig_user+"/"+$scope.orig_repo+"/contents/"+$scope.software.biotoolsID+".json?ref=dev", {method: 'GET'})
+	    .then(function (res) {
+	    	return res.json();
+	    })
+	    .then(function (data) {  
+			$scope.software=JSON.parse(atob(data.content)); // WARNING atob
+        })
+		.catch(function (err) {
+			console.log(err);
+		})
 	}
 
 	$scope.gh_send=function(){
@@ -1145,7 +1198,7 @@ angular.module('elixir_front.controllers', [])
 	    })
 	    .then(function (data) {  
 	    		var sha=data.sha;
-	    		var encodedContent = btoa(angular.toJson($scope.software, 2));
+	    		var encodedContent = btoa(angular.toJson($scope.software, 2)); // WARNING btoa 
 				fetch("https://api.github.com/repos/"+$scope.this_user+"/"+$scope.orig_repo+"/contents/"+$scope.software_file, {
 		                method: 'PUT',
 		                headers : new Headers({"authorization":$scope.authorizations,"content-type":"application/json"}),
@@ -1169,6 +1222,7 @@ angular.module('elixir_front.controllers', [])
 	}
 
 	$scope.gh_pullrequest=function(){
+		$scope.pull_request.inProgress=true;
 		fetch("https://api.github.com/repos/"+$scope.orig_user+"/"+$scope.orig_repo+"/pulls", {
                 method: 'POST',
                 headers : new Headers({"authorization":$scope.authorizations}),
@@ -1179,9 +1233,14 @@ angular.module('elixir_front.controllers', [])
 	    })
 	    .then(function (data) {
 	        console.log(data);
+	        $scope.pull_request.success=true;
+	        $scope.pull_request.inProgress=false;
+	       	$scope.pull_request.link=data.html_url;
+	       	$scope.pull_request.name="Pull Request: "+data.number;
        })
 	    .catch(function (err) {
 	    	console.log(err);
+	    	$scope.pull_request.inProgress=false;
 	    })
 	}
 
