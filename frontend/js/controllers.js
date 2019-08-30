@@ -1035,24 +1035,31 @@ angular.module('elixir_front.controllers', [])
 
 
 	///////////////////////////////////////////////////////////////////////////
+	// Edit to interact with Github API
+	///////////////////////////////////////////////////////////////////////////
 	//TODO:
 	//	- Add control on Github api functions
 	//		- Error management
 	//		- File creation/update control
 	//		- Pull request messages
 	///////////////////////////////////////////////////////////////////////////
+	// client id and client secret are from the Github OAuthAPP : https://github.com/settings/connections/applications/910ed700e3586d568fc3
 	$scope.client_id="910ed700e3586d568fc3"
 	$scope.client_secret="4b06553041f33c30dc922f8c20a032b9fa35f44c"
+	// user hosting the content repo
 	$scope.orig_user="ValentinMarcon"
+	// content repo
 	$scope.orig_repo="TESTAPI"
-	$scope.this_user="nocraMnitnelaV"
+	// branch to make the pull request on the repo
 	$scope.orig_branch="dev"
-	$scope.new_branch="new_branch"
+
+	$scope.this_user="nocraMnitnelaV"
+	$scope.authorizations="Basic ZmVkODUyYTNlN2ZhYjlhZWYzYzU2Y2RiMTlhZDA3NDEzZDM2ZTJiMQ==" // TO REMOVE
 	$scope.pull_request = {}
 	$scope.login = false;
+	///////////////////////////////////////////////////////////////////////////
 	var searchParams = new URLSearchParams(window.location.search);
 	if (searchParams.has('code')) {
-		console.log("toto");
 		var code = searchParams.get('code');
 		var body = new FormData();
 		body.append("code", code);
@@ -1068,10 +1075,14 @@ angular.module('elixir_front.controllers', [])
 	    })
 	    .then(function (data) {
 	    	if (data.access_token){
-		        $scope.authorizations="Basic "+btoa(data.access_token); // NOT Really secure
-		    	console.log($scope.authorizations);
+		        $scope.authorizations="Basic "+btoa(data.access_token); // NOT Really secure  
+				
+				//$scope.this_user=data.
+		    	//console.log($scope.authorizations);
 		    	$scope.login = true;
 		    	window.history.replaceState({}, document.title, "/");
+		    	console.log(data.access_token);
+		    	$scope.gh_user(data.access_token); 
 		    }
 		   	else console.log(data.error);
        })
@@ -1079,41 +1090,32 @@ angular.module('elixir_front.controllers', [])
 	    	console.log(err);
 	    })
 	}
+	///////////////////////////////////////////////////////////////////////////
 
+	$scope.gh_user=function(access_token){
+		console.log(access_token);
+		var authorizations=$scope.client_id+":"+$scope.client_secret;
+		authorizations="Basic "+btoa(authorizations);
+		fetch("https://api.github.com/applications/"+$scope.client_id+"/tokens/"+access_token, {method: 'GET',headers : new Headers({"authorization": authorizations})})
+	    .then(function (res) {
+	    	return res.json();
+	    })
+	    .then(function (data) {  
+	    	console.log(data.user.login);
+	    	$scope.this_user=data.user.login;	// You can also get avatar etc.. from the json
+        })
+		.catch(function (err) {
+			console.log(err);
+		})
 
-	$scope.loginButtonClick=function(){
-    	if (searchParams.has('code')) {
-    		var code = searchParams.get('code');
-			var body = new FormData();
-			body.append("code", code);
-			body.append("client_id", $scope.client_id);
-			body.append("client_secret", $scope.client_secret);
-			fetch("https://github.com/login/oauth/access_token", {
-	                method: 'POST',
-	                headers : new Headers({accept:'application/json'}),
-	                body : body
-	        })
-		    .then(function (res) {
-		    	return res.json();
-		    })
-		    .then(function (data) {
-		    	if (data.access_token){
-			        $scope.authorizations="Basic "+btoa(data.access_token); // NOT Really secure
-			    	console.log($scope.authorizations);
-			    	$scope.login = true;
-			    }
-			   	else console.log(data.error);
-	       })
-		    .catch(function (err) {
-		    	console.log(err);
-		    })
-		}
 	}
 
-
+	// SEARCH
+	// Fill the form with a tool from a json in the github repo
 	// TODO: Manage error in GET: non-json entry
+	// TODO: Remove (it is just for test)
 	$scope.searchButtonClick=function(){
-		fetch("https://api.github.com/repos/"+$scope.orig_user+"/"+$scope.orig_repo+"/contents/"+$scope.software.biotoolsID+".json?ref=dev", {method: 'GET'})
+		fetch("https://api.github.com/repos/"+$scope.orig_user+"/"+$scope.orig_repo+"/contents/"+$scope.software.biotoolsID+".json?ref="+$scope.orig_branch, {method: 'GET'})
 	    .then(function (res) {
 	    	return res.json();
 	    })
